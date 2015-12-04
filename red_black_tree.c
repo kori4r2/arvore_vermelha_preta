@@ -211,7 +211,6 @@ void balance_height(NODE *node, NODE *parent, TREE *tree){
 			}
 			sibling->color = parent->color;
 			parent->color = RED;
-//			parent->black_height = black_height(parent->left_child);
 			balance_height(node, parent, tree);
 		}else{
 			if(nephew->color == RED){
@@ -240,12 +239,11 @@ void balance_height(NODE *node, NODE *parent, TREE *tree){
 					}else{
 						parent->left_child = rotate_left(sibling);
 					}
-//					parent->black_height = black_height(parent->left_child);
 					balance_height(node, parent, tree);
 				}else{
 					sibling->color = RED;
 					parent->color = BLACK;
-					parent->black_height = black_height(parent->left_child);
+					parent->black_height = black_height(sibling);
 					balance_height(parent, parent->parent, tree);
 				}
 			}
@@ -260,9 +258,9 @@ void remove_aux(NODE *node, NODE *deleted, TREE *tree){
 		else node->parent->left_child = node->right_child;
 		if(node->right_child != tree->nil) node->right_child->parent = node->parent;
 		if(node->color == BLACK){
-			if(node->right_child->color == RED) node->color = BLACK;
+			if(node->right_child->color == RED) node->right_child->color = BLACK;
 			else{
-//				node->parent->black_height = node->parent->
+				node->right_child->color = BLACK;
 				balance_height(node->right_child, node->parent, tree);
 			}
 		}
@@ -303,7 +301,10 @@ void remove_down(NODE *node, ITEM **item, NODE *parent, TREE *tree){
 				}else tree->root = node;
 				if(aux->color == BLACK){
 					if(node->color == RED) node->color = BLACK;
-					else balance_height(node, parent, tree);
+					else{
+						node->color = BLACK;
+						balance_height(node, parent, tree);
+					}
 				}
 				delete_node(&aux);
 			}
