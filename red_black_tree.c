@@ -172,7 +172,7 @@ NODE *insert_node_down(NODE *node, ITEM **item, NODE *parent, TREE *tree, NODE *
 			node->right_child = insert_node_down(node->right_child, item, node, tree, position);
 		// Caso seja um valor igual ao do nó atual, exibe a saída correspondente
 		}else{
-			printf("Chave existente\n");
+//			printf("Chave existente\n");
 			delete_item(item);
 		}
 	}
@@ -209,9 +209,9 @@ void balance_height(NODE *node, NODE *parent, TREE *tree){
 				else if(parent->parent->right_child == parent) parent->parent->right_child = rotate_right(parent);
 				else parent->parent->left_child = rotate_right(parent);
 			}
-			sibling->color = BLACK;
+			sibling->color = parent->color;
 			parent->color = RED;
-			parent->parent->black_height = black_height(parent->parent->left_child);
+//			parent->black_height = black_height(parent->left_child);
 			balance_height(node, parent, tree);
 		}else{
 			if(nephew->color == RED){
@@ -224,28 +224,28 @@ void balance_height(NODE *node, NODE *parent, TREE *tree){
 					else if(parent->parent->right_child == parent) parent->parent->right_child = rotate_right(parent);
 					else parent->parent->left_child = rotate_right(parent);
 				}
-				sibling->color = RED;
+				sibling->color = parent->color;
 				parent->color = BLACK;
 				nephew->color = BLACK;
-				parent->parent->black_height = black_height(parent->parent->left_child);
+				parent->black_height = black_height(parent->left_child);
+				sibling->black_height = black_height(sibling->left_child);
 				balance_height(parent, parent->parent, tree);
 			}else{
 				nephew = (sibling->right_child == nephew)? sibling->left_child : sibling->right_child;
 				if(nephew->color == RED){
+					sibling->color = RED;
+					nephew->color = BLACK;
 					if(parent->right_child == sibling){
-						sibling->color = RED;
-						nephew->color = BLACK;
 						parent->right_child = rotate_right(sibling);
 					}else{
-						sibling->color = RED;
-						nephew->color = BLACK;
 						parent->left_child = rotate_left(sibling);
 					}
-					parent->black_height = black_height(parent->left_child);
+//					parent->black_height = black_height(parent->left_child);
 					balance_height(node, parent, tree);
 				}else{
 					sibling->color = RED;
 					parent->color = BLACK;
+					parent->black_height = black_height(parent->left_child);
 					balance_height(parent, parent->parent, tree);
 				}
 			}
@@ -255,24 +255,25 @@ void balance_height(NODE *node, NODE *parent, TREE *tree){
 
 void remove_aux(NODE *node, NODE *deleted, TREE *tree){
 	if(node->left_child == tree->nil){
-		NODE *aux = node;
 		swap_items(&node->item, &deleted->item);
-		if(node->parent->right_child == node) node->parent->right_child = node->right_child;
+		if(node->parent == deleted) deleted->right_child = node->right_child;
 		else node->parent->left_child = node->right_child;
 		if(node->right_child != tree->nil) node->right_child->parent = node->parent;
-		node = node->right_child;
-		if(aux->color == BLACK){
-			if(node->color == RED) node->color = BLACK;
-			else balance_height(node, aux->parent, tree);
+		if(node->color == BLACK){
+			if(node->right_child->color == RED) node->color = BLACK;
+			else{
+//				node->parent->black_height = node->parent->
+				balance_height(node->right_child, node->parent, tree);
+			}
 		}
-		delete_node(&aux);
+		delete_node(&node);
 	}else remove_aux(node->left_child, deleted, tree);
 }
 
 void remove_down(NODE *node, ITEM **item, NODE *parent, TREE *tree){
 	// Caso seja passado uma variável que contenha NULL, exibe a saída correspondente
 	if(node == NULL || node == tree->nil){
-		printf("Nao encontrado\n");
+//		printf("Nao encontrado\n");
 	}else{
 		// Se o nó atual tiver um item com valor maior do que o valor inserido, se chama recursivamente para a esquerda
 		if((*item)->id < node->item->id){
@@ -300,7 +301,6 @@ void remove_down(NODE *node, ITEM **item, NODE *parent, TREE *tree){
 					if(parent->right_child == aux) parent->right_child = node;
 					else parent->left_child = node;
 				}else tree->root = node;
-				node->color = BLACK;
 				if(aux->color == BLACK){
 					if(node->color == RED) node->color = BLACK;
 					else balance_height(node, parent, tree);
@@ -381,7 +381,7 @@ void print_nested_aux(NODE *node, TREE *tree){
 int print_nested(TREE *tree){
 	if(!empty_tree(tree)){
 		print_nested_aux(tree->root, tree);
-		printf("\n");
+//		printf("\n");
 		return 0;
 	}
 	return 1;
