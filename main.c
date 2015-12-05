@@ -16,9 +16,10 @@ int main(int argc, char *argv[]){
 		op = fgetc(stdin);
 		// Evita que leia lixo da entrada
 		while(op != EOF && !isalnum(op)) op = fgetc(stdin);
+		// Se não for a primeira execução, coloca uma quebra de linha antes de realizar a operação
 		if(start && op != EOF) printf("\n");
 		start = 1;
-		// De acordo com a operação selecionada, chamas as funções correspondentes e imprime o que for necessário
+		// De acordo com a operação selecionada, chamas as funções correspondentes
 		if(op == 'I'){
 			scanf("%d", &id);
 			insert_item(tree, create_item(id, id));
@@ -26,14 +27,13 @@ int main(int argc, char *argv[]){
 		if(op == 'R'){
 			scanf("%d", &id);
 			remove_item(tree, id);
-//			if(result < INT_MAX && result > INT_MIN) printf("%d \n", result);
 		}
 		if(op == 'A'){
 			print_tabs(tree);
 		}
+		// Se for realizada uma operação, imprime a árvore
 		if(op != EOF) print_nested(tree);
 	}while(op != EOF);
-//	printf("\n");
 
 	// Libera a memória alocada
 	delete_tree(&tree);
