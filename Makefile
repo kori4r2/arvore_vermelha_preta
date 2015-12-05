@@ -7,11 +7,7 @@ clean:
 	rm -f program
 	rm -f log.txt
 	rm -f *.zip
-	rm -f test1.out
-	rm -f test2.out
-	rm -f test3.out
-	rm -f test4.out
-	rm -f test5.out
+	rm -f test*.out
 	clear
 
 run:
